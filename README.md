@@ -26,14 +26,13 @@ Recipes live in the root `recipes` collection. The app queries by the signed-in
 user's UID and sorts and filters the matching recipes locally. Rules validate
 each write and check ownership. Blank servings are omitted.
 
-A document ID is the lowercase hexadecimal SHA-256 of the UID, an underscore,
-and the lowercase hexadecimal SHA-256 of the trimmed, lowercase name. The Add
-transaction reads that path before creating it. Renaming moves the recipe
-atomically and preserves its original timestamp and favorite state.
-
-Firestore Rules normalize ASCII, Vietnamese and Latin-1 uppercase letters.
-Names using uppercase letters outside these ranges may be refused when Dart
-and Rules produce different normalized names.
+A document ID joins the lowercase hexadecimal SHA-256 hashes of the UID and
+`nameKey` with an underscore. `nameKey` is the trimmed name after Unicode 17.0
+default case folding. Firestore Rules verify the key against the display name
+and apply the same Unicode code point limits as the form. Existing recipes
+without `nameKey` still load, and edits save the current key. Add and rename
+transactions check the destination before writing. Renames preserve the
+original timestamp and favorite state.
 
 ## Local Firebase
 

@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 
+import 'recipe_name_key.dart';
+
 const categories = ['Breakfast', 'Lunch', 'Dinner', 'Dessert'];
 const difficulties = ['Easy', 'Medium', 'Hard'];
 
 String recipeDocumentId(String uid, String name) {
   String hash(String value) => sha256.convert(utf8.encode(value)).toString();
-  return '${hash(uid)}_${hash(name.trim().toLowerCase())}';
+  return '${hash(uid)}_${hash(recipeNameKey(name))}';
 }
 
 class RecipeDraft {
@@ -30,6 +32,7 @@ class RecipeDraft {
 
   Map<String, dynamic> toFields() => {
     'name': name.trim(),
+    'nameKey': recipeNameKey(name),
     'category': category,
     'difficulty': difficulty,
     'cookTime': cookTime,
